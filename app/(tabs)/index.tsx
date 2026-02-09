@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 
+import MovieCard from "@/components/MovieCard";
 import SearchBar from "@/components/SearchBar";
 import { fetchMovies } from "@/services/api";
 import { icons } from "@/constants/icons";
@@ -53,29 +54,20 @@ export default function Index() {
               <Text className="text-white text-center font-bold mt-5 mb-3">
                 Latest Movies!
               </Text>
-
-              <FlatList
-                data={movies}
+              <FlatList<Movie>
+                data={movies ?? []}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
-                  <View className="bg-secondary rounded-lg p-3 mb-3">
-                    <Image
-                      source={{
-                        uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-                      }}
-                      className="w-24 h-36 rounded-md mb-2"
-                    />
-                    <Text className="text-white font-bold">{item.title}</Text>
+                  <View className="flex-1 mb-4">
+                    <MovieCard item={item} />
                   </View>
                 )}
-                numColumns={3}
+                numColumns={2}
                 columnWrapperStyle={{
                   justifyContent: "space-between",
-                  gap: 20,
-                  paddingRight: 5,
-                  marginBottom: 10,
+                  gap: 12,
                 }}
-                showsVerticalScrollIndicator={false}
+                scrollEnabled={false}
               />
             </>
           </View>
