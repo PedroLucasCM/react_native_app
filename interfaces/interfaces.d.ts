@@ -15,6 +15,16 @@ interface Movie {
   vote_count: number;
 }
 
+interface TVShow {
+  id: number;
+  name: string;
+  poster_path: string;
+  vote_average: number;
+  first_air_date: string;
+}
+
+type MediaItem = Movie | TVShow;
+
 interface TrendingMovie {
   searchTerm: string;
   movie_id: number;

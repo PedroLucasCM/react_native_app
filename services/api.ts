@@ -35,10 +35,14 @@ export const fetchMovies = async ({
   return data.results ?? [];
 };
 
-export const fetchTVshows = async ({ query }: { query: string }) => {
+export const fetchTVshows = async ({
+  query,
+}: {
+  query: string;
+}): Promise<TVShow[]> => {
   const endpoint = query
-    ? `${TMDB_CONFIG.BASE_URL}/search/tv?query=${encodeURIComponent(query)}`
-    : `${TMDB_CONFIG.BASE_URL}/discover/tv?sort_by=popularity.desc`;
+    ? `/search/tv?query=${encodeURIComponent(query)}`
+    : `/discover/tv?sort_by=popularity.desc`;
 
   const response = await fetch(`${TMDB_CONFIG.BASE_URL}${endpoint}`, {
     method: "GET",
@@ -46,10 +50,10 @@ export const fetchTVshows = async ({ query }: { query: string }) => {
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch movies: ${response.statusText}`);
+    throw new Error(`Failed to fetch TV shows: ${response.statusText}`);
   }
 
-  const data = await response.json();
+  const data: { results: TVShow[] } = await response.json();
 
-  return data.results;
+  return data.results ?? [];
 };
