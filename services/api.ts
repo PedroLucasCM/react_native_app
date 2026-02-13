@@ -37,8 +37,8 @@ export const fetchMovies = async ({
 
 export const fetchTVshows = async ({ query }: { query: string }) => {
   const endpoint = query
-    ? `${TMDB_CONFIG.BASE_URL}/search/tv?query=${encodeURIComponent(query)}`
-    : `${TMDB_CONFIG.BASE_URL}/discover/tv?sort_by=popularity.desc`;
+    ? `/search/tv?query=${encodeURIComponent(query)}`
+    : `/discover/tv?sort_by=popularity.desc`;
 
   const response = await fetch(`${TMDB_CONFIG.BASE_URL}${endpoint}`, {
     method: "GET",
