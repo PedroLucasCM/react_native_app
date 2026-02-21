@@ -6,7 +6,7 @@ import { icons } from "@/constants/icons";
 
 const MovieCard = ({ item }: { item: Movie }) => {
   return (
-    <Link href={`/movie/${item.id}` as any} asChild>
+    <Link href={`/movies/${item.id}` as any} asChild>
       <TouchableOpacity className="w-full bg-secondary rounded-lg p-3">
         <Image
           source={{

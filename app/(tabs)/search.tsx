@@ -1,17 +1,20 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import MovieCard from "@/components/MovieCard";
 import SearchBar from "@/components/SearchBar";
 import { fetchMovies } from "@/services/api";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
+import { updateSearchCount } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 
 const search = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const lastTrackedQueryRef = useRef<string | null>(null);
 
   const {
     data: movies,
@@ -19,20 +22,33 @@ const search = () => {
     error: moviesError,
     refetch: loadMovies,
     reset,
-  } = useFetch(() => fetchMovies({ query: searchQuery }), false);
+  } = useFetch(() => fetchMovies({ query: debouncedQuery }), false);
   const movieCount = movies?.length ?? 0;
 
   useEffect(() => {
-    const timeoutId = setTimeout(async () => {
-      if (searchQuery.trim()) {
-        await loadMovies();
-      } else {
-        reset();
-      }
+    const timeoutId = setTimeout(() => {
+      setDebouncedQuery(searchQuery.trim());
     }, 500);
 
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (debouncedQuery) {
+      void loadMovies();
+    } else {
+      reset();
+      lastTrackedQueryRef.current = null;
+    }
+  }, [debouncedQuery]);
+
+  useEffect(() => {
+    if (moviesLoading || !debouncedQuery || !movies?.[0]) return;
+    if (lastTrackedQueryRef.current === debouncedQuery) return;
+
+    lastTrackedQueryRef.current = debouncedQuery;
+    void updateSearchCount(debouncedQuery, movies[0]);
+  }, [movies, moviesLoading, debouncedQuery]);
 
   return (
     <View className="flex-1 bg-primary">
