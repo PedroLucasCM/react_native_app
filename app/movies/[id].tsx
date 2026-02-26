@@ -1,14 +1,7 @@
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import React, { use } from "react";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
+import React from "react";
 import { fetchMovieDetails } from "@/services/api";
 import { icons } from "@/constants/icons";
 import useFetch from "@/services/useFetch";
@@ -29,9 +22,7 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => (
 
 const MovieDetails = () => {
   const { id } = useLocalSearchParams();
-  const { data: movie, loading } = useFetch(() =>
-    fetchMovieDetails(id as string),
-  );
+  const { data: movie } = useFetch(() => fetchMovieDetails(id as string));
   return (
     <View className="flex-1 bg-primary">
       <ScrollView

@@ -18,7 +18,7 @@ import useFetch from "@/services/useFetch";
 import { useRouter } from "expo-router";
 
 export default function Index() {
-  const rounter = useRouter();
+  const router = useRouter();
   const {
     data: trendingMovies,
     loading: trendingLoading,
@@ -52,7 +52,7 @@ export default function Index() {
         ) : (
           <View className="flex-1 mt-5">
             <SearchBar
-              onPress={() => rounter.push("/search")}
+              onPress={() => router.push("/search")}
               placeholder="Search for a movie or show"
             />
             {trendingMovies && trendingMovies.length > 0 && (

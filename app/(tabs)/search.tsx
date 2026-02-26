@@ -40,7 +40,7 @@ const search = () => {
       reset();
       lastTrackedQueryRef.current = null;
     }
-  }, [debouncedQuery]);
+  }, [debouncedQuery, loadMovies, reset]);
 
   useEffect(() => {
     if (moviesLoading || !debouncedQuery || !movies?.[0]) return;
