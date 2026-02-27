@@ -13,6 +13,7 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import React, { useState } from "react";
 
+import { colors } from "@/constants/colors";
 import { createUserAccount } from "@/services/appwrite";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
@@ -91,6 +92,7 @@ const Create = () => {
       });
 
       Alert.alert("Sucesso", "Conta criada com sucesso!");
+      router.push("/(tabs)/profile");
     } catch (error: any) {
       const message =
         typeof error?.message === "string"
@@ -99,7 +101,6 @@ const Create = () => {
 
       Alert.alert("Erro ao criar conta", message);
     } finally {
-      router.push("/(tabs)/profile");
       setIsSubmitting(false);
     }
   };
@@ -126,49 +127,49 @@ const Create = () => {
           </Text>
           <TextInput
             placeholder="Username"
-            placeholderTextColor={"#D6C6FF"}
-            className="bg-primary/70 rounded-xl p-4 mb-4 text-white"
+            placeholderTextColor={colors.light[100]}
+            className="bg-primary/70 rounded-xl p-4 mb-4 text-light-100"
             value={username}
             onChangeText={setUsername}
           />
           <TextInput
             placeholder="Password"
-            placeholderTextColor={"#D6C6FF"}
+            placeholderTextColor={colors.light[100]}
             secureTextEntry
-            className="bg-primary/70 rounded-xl p-4 mb-4 text-white"
+            className="bg-primary/70 rounded-xl p-4 mb-4 text-light-100"
             value={password}
             onChangeText={setPassword}
           />
           {showPasswordError && (
-            <Text style={{ color: "red", marginBottom: 10, marginTop: -10 }}>
-              A senha deve ter mais de 5 caracteres.
+            <Text className="text-red-500 mb-2 -mt-2">
+              A senha deve ter 8 ou mais caracteres.
             </Text>
           )}
 
           <TextInput
             placeholder="Confirm Password"
-            placeholderTextColor={"#D6C6FF"}
+            placeholderTextColor={colors.light[100]}
             secureTextEntry
-            className="bg-primary/70 rounded-xl p-4 mb-4 text-white"
+            className="bg-primary/70 rounded-xl p-4 mb-4 text-light-100"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             style={[{ borderColor: passwordBorderColor, borderWidth: 1 }]}
           />
           {showConfirmPasswordError && (
-            <Text style={{ color: "red", marginBottom: 10, marginTop: -10 }}>
+            <Text className="text-red-500 mb-2 -mt-2">
               As senhas não coincidem.
             </Text>
           )}
           <TextInput
             placeholder="E-mail"
-            placeholderTextColor={"#D6C6FF"}
-            className="bg-primary/70 rounded-xl p-4 mb-4 text-white"
+            placeholderTextColor={colors.light[100]}
+            className="bg-primary/70 rounded-xl p-4 mb-4 text-light-100"
             value={email}
             onChangeText={handleEmailChange}
             style={[{ borderColor: emailBorderColor, borderWidth: 1 }]}
           />
           {showEmailError && (
-            <Text style={{ color: "red", marginBottom: 10, marginTop: -10 }}>
+            <Text className="text-red-500 mb-2 -mt-2">
               Digite um e-mail válido.
             </Text>
           )}
@@ -177,7 +178,7 @@ const Create = () => {
             onPress={() => setShowPicker(true)}
             className="bg-primary/70 rounded-xl p-4 mb-4"
           >
-            <Text className={birthDate ? "text-white" : "text-light-100"}>
+            <Text className={birthDate ? "text-light-100" : "text-light-200"}>
               {formattedDate}
             </Text>
           </Pressable>
@@ -193,18 +194,15 @@ const Create = () => {
             />
           )}
 
-          <View>
+          <View className="mt-4">
             <Pressable
               onPress={handleCreateAccount}
               disabled={!canSubmit || isSubmitting}
-              className="rounded-xl p-3 items-center ml-auto w-1/2 my-auto"
-              style={{
-                backgroundColor:
-                  canSubmit && !isSubmitting ? "#7F5AF0" : "#7F5AF080",
-                opacity: canSubmit && !isSubmitting ? 1 : 0.7,
-              }}
+              className={`rounded-xl p-3 items-center w-full ${
+                canSubmit && !isSubmitting ? "bg-light-300" : "bg-light-300/50"
+              }`}
             >
-              <Text className="text-white text-center font-bold">
+              <Text className="text-light-100 text-center font-bold">
                 {isSubmitting ? "Criando..." : "Criar conta"}
               </Text>
             </Pressable>

@@ -10,6 +10,7 @@ import {
 import MovieCard from "@/components/MovieCard";
 import SearchBar from "@/components/SearchBar";
 import TrendingCard from "@/components/TrendingCard";
+import { colors } from "@/constants/colors";
 import { fetchMovies } from "@/services/api";
 import { getTrendingMovies } from "@/services/appwrite";
 import { icons } from "@/constants/icons";
@@ -38,13 +39,14 @@ export default function Index() {
         className="flex-1 px-5"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ minHeight: "100%", paddingBottom: 10 }}
+        refreshControl={undefined}
       >
         <Image source={icons.logo} className="w-12 h-10 mt-20 mb-5 mx-auto" />
 
         {moviesLoading || trendingLoading ? (
           <ActivityIndicator
             size="large"
-            color="#fff"
+            color={colors.light[100]}
             className="mt-10 self-center"
           />
         ) : moviesError || trendingError ? (
@@ -52,18 +54,20 @@ export default function Index() {
         ) : (
           <View className="flex-1 mt-5">
             <SearchBar
-              onPress={() => router.push("/search")}
+              onPress={() => router.push({ pathname: "/search", params: { focus: "1" } })}
               placeholder="Search for a movie or show"
             />
             {trendingMovies && trendingMovies.length > 0 && (
-              <View className="text-lg text-white font-bold mt-5 mb-3">
-                <Text className="text-white text-center font-bold mt-5 mb-3">
+              <View className="mt-5 mb-3">
+                <Text className="text-light-100 text-center font-bold mt-5 mb-3">
                   Trending Movies!
                 </Text>
                 <FlatList<TrendingMovie>
                   className="mb-4 mt-3"
                   data={trendingMovies}
-                  keyExtractor={(item) => item.movie_id.toString()}
+                  keyExtractor={(item, index) =>
+                    `${item.movie_id.toString()}-${index}`
+                  }
                   renderItem={({ item, index }) => (
                     <TrendingCard movie={item} index={index} />
                   )}
@@ -74,12 +78,12 @@ export default function Index() {
               </View>
             )}
             <>
-              <Text className="text-white text-center font-bold mt-5 mb-3">
+              <Text className="text-light-100 text-center font-bold mt-5 mb-3">
                 Latest Movies!
               </Text>
               <FlatList<Movie>
                 data={movies}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item, index) => `${item.id.toString()}-${index}`}
                 renderItem={({ item }) => (
                   <View className="flex-1 mb-4">
                     <MovieCard item={item} />

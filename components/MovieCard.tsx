@@ -1,5 +1,6 @@
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
+import { colors } from "@/constants/colors";
 import { Link } from "expo-router";
 import React from "react";
 import { icons } from "@/constants/icons";
@@ -17,7 +18,7 @@ const MovieCard = ({ item }: { item: Movie }) => {
           className="w-full h-56 rounded-lg"
           resizeMode="cover"
         />
-        <Text className="text-sm text-white font-bold mt-2" numberOfLines={1}>
+        <Text className="text-sm text-light-100 font-bold mt-2" numberOfLines={1}>
           {item.title}
         </Text>
 
@@ -26,9 +27,9 @@ const MovieCard = ({ item }: { item: Movie }) => {
             source={icons.star}
             className="size-4"
             resizeMode="contain"
-            tintColor="#facc15"
+            tintColor={colors.light[200]}
           />
-          <Text className="text-xs text-white font-bold uppercase">
+          <Text className="text-xs text-light-100 font-bold uppercase">
             {(item.vote_average / 2).toFixed(1)}/5
           </Text>
         </View>

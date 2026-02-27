@@ -1,4 +1,4 @@
-import {
+﻿import {
   Alert,
   Image,
   Pressable,
@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Link, useRouter } from "expo-router";
 
+import { colors } from "@/constants/colors";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 import { loginUser } from "@/services/appwrite";
@@ -52,36 +53,39 @@ const Login = () => {
         <Text className="text-light-200 text-2xl font-bold text-center mb-8 py-1">
           Bem-vindo de volta!
         </Text>
-        <View className="bg-dark-100/80 rounded-2xl p-5 border border-light-100/10 mx-5">
+        <View className="bg-dark-100/80 rounded-2xl p-5 border mx-5">
           <TextInput
             placeholder="Email"
-            placeholderTextColor={"#D6C6FF"}
+            placeholderTextColor={colors.light[100]}
             value={email}
             onChangeText={setEmail}
-            className="bg-primary/70 rounded-xl p-4 mb-4 text-white"
+            className="bg-primary/70 rounded-xl p-4 mb-4 text-light-100"
           />
           <TextInput
             placeholder="Password"
-            placeholderTextColor={"#D6C6FF"}
+            placeholderTextColor={colors.light[100]}
             secureTextEntry
             value={password}
             onChangeText={setPassword}
-            className="bg-primary/70 rounded-xl p-4 mb-4 text-white"
+            className="bg-primary/70 rounded-xl p-4 mb-4 text-light-100"
           />
-          <View className="flex-row items-center justify-between mt-4">
-            <Link href="/(account)/create" className="mb-4">
-              <Text className="text-sm text-light-200 text-center mr-auto">
+          <Pressable
+            onPress={() => handleLogin(email, password)}
+            disabled={isSubmitting}
+            className={`rounded-xl p-3 items-center w-full ${
+              isSubmitting ? "bg-light-300/50" : "bg-light-300"
+            }`}
+          >
+            <Text className="text-light-100 text-center font-bold">
+              {isSubmitting ? "Entrando..." : "Fazer login"}
+            </Text>
+          </Pressable>
+          <View className="mt-4">
+            <Link href="/(account)/create" className="mb-4 self-center">
+              <Text className="text-sm text-light-200 text-center">
                 Não tem uma conta? Crie uma!
               </Text>
             </Link>
-            <Pressable
-              onPress={() => handleLogin(email, password)}
-              className="bg-[#7F5AF0] rounded-xl p-3 items-center ml-auto w-1/2 my-auto"
-            >
-              <Text className="text-white text-center font-bold">
-                Fazer login
-              </Text>
-            </Pressable>
           </View>
         </View>
       </ScrollView>

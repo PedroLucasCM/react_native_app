@@ -42,25 +42,45 @@ const normalizePosterPath = (value: unknown): string => {
 
 export const updateSearchCount = async (searchTerm: string, movie: Movie) => {
   try {
+    const normalizedSearchTerm = searchTerm.trim();
     const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
-      Query.equal("searchTerm", searchTerm),
+      Query.equal("movie_id", movie.id),
+      Query.orderDesc("count"),
+      Query.limit(100),
     ]);
 
     console.log("Appwrite search count result:", result);
 
     if (result.documents.length > 0) {
-      const existingMovie = result.documents[0];
+      const [primaryMovie, ...duplicateMovies] = result.documents;
+      const duplicatedCount = duplicateMovies.reduce(
+        (total, doc) => total + Number(doc.count ?? 0),
+        0,
+      );
+      const nextCount = Number(primaryMovie.count ?? 0) + duplicatedCount + 1;
+
       await database.updateDocument(
         DATABASE_ID,
         COLLECTION_ID,
-        existingMovie.$id,
+        primaryMovie.$id,
         {
-          count: existingMovie.count + 1,
+          count: nextCount,
+          searchTerm: normalizedSearchTerm,
+          title: movie.title,
+          poster_url: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
         },
       );
+
+      if (duplicateMovies.length > 0) {
+        await Promise.all(
+          duplicateMovies.map((doc) =>
+            database.deleteDocument(DATABASE_ID, COLLECTION_ID, doc.$id),
+          ),
+        );
+      }
     } else {
       await database.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
-        searchTerm: searchTerm,
+        searchTerm: normalizedSearchTerm,
         movie_id: movie.id,
         count: 1,
         title: movie.title,

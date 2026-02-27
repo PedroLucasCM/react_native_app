@@ -1,6 +1,7 @@
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
 
 import MovieCard from "@/components/MovieCard";
+import { colors } from "@/constants/colors";
 import React from "react";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
@@ -30,7 +31,7 @@ const Saved = () => {
             <MovieCard item={item} />
           </View>
         )}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) => `${item.id.toString()}-${index}`}
         numColumns={2}
         className="px-5"
         columnWrapperStyle={{
@@ -45,11 +46,15 @@ const Saved = () => {
         }}
         ListHeaderComponent={
           <>
-            <Text className="text-white text-2xl font-bold text-center mb-3">
+            <Text className="text-light-100 text-2xl font-bold text-center mb-3">
               Favoritos
             </Text>
             {favoritesLoading && (
-              <ActivityIndicator size="large" color="#fff" className="my-3" />
+              <ActivityIndicator
+                size="large"
+                color={colors.light[100]}
+                className="my-3"
+              />
             )}
             {favoritesError && (
               <Text className="text-red-500 text-center px-5 my-3">
@@ -65,7 +70,7 @@ const Saved = () => {
                 source={icons.save}
                 className="size-16 mb-4"
                 resizeMode="contain"
-                tintColor="#A8B5DB"
+                tintColor={colors.light[200]}
               />
               <Text className="text-light-200 text-center text-base leading-6">
                 Voce ainda nao favoritou nenhum filme.

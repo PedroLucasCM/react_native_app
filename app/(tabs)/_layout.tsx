@@ -1,5 +1,6 @@
 import { Image, ImageBackground, StatusBar, Text, View } from "react-native";
 
+import { colors } from "@/constants/colors";
 import React from "react";
 import { Tabs } from "expo-router";
 import { icons } from "@/constants/icons";
@@ -12,7 +13,7 @@ const TabIcon = ({ focused, icon, title }: any) => {
         source={images.highlight}
         className="flex flex-row w-full flex-1 min-w-[114px] min-h-16 mt-4 justify-center items-center rounded-full overflow-hidden h-full"
       >
-        <Image source={icon} tintColor="#151312" className="size-5" />
+        <Image source={icon} tintColor={colors.secondary} className="size-5" />
         <Text className="text-secondary text-base font-semibold ml-2">
           {title}
         </Text>
@@ -21,7 +22,7 @@ const TabIcon = ({ focused, icon, title }: any) => {
   } else {
     return (
       <View className="size-full justify-center items-center mt-4 rounded-full">
-        <Image source={icon} tintColor="#A8B5DB" className="size-5" />
+        <Image source={icon} tintColor={colors.light[200]} className="size-5" />
       </View>
     );
   }
@@ -41,7 +42,7 @@ const _layout = () => {
             alignItems: "center",
           },
           tabBarStyle: {
-            backgroundColor: "#0f0d23",
+            backgroundColor: colors.dark[200],
             borderRadius: 50,
             marginHorizontal: 20,
             marginBottom: 36,
@@ -49,7 +50,7 @@ const _layout = () => {
             position: "absolute",
             overflow: "hidden",
             borderWidth: 1,
-            borderColor: "#0f0d23",
+            borderColor: colors.dark[200],
           },
         }}
       >

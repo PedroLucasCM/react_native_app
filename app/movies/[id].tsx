@@ -1,6 +1,7 @@
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
+import { colors } from "@/constants/colors";
 import React from "react";
 import { fetchMovieDetails } from "@/services/api";
 import { icons } from "@/constants/icons";
@@ -39,7 +40,7 @@ const MovieDetails = () => {
           />
         </View>
         <View className="flex-col items-start justify-center mt-5 ">
-          <Text className="text-white text-xl font-bold">{movie?.title}</Text>
+          <Text className="text-light-100 text-xl font-bold">{movie?.title}</Text>
         </View>
         <View className="flex-row items-center mt-2 gap-x-1">
           <Image source={icons.star} className="size-2" />
@@ -81,9 +82,9 @@ const MovieDetails = () => {
         <Image
           source={icons.arrow}
           className="size-5 mr-1 mt-0.5 rotate-180"
-          tintColor="#fff"
+          tintColor={colors.light[100]}
         />
-        <Text className="text-white text-base font-semibold">Back</Text>
+        <Text className="text-light-100 text-base font-semibold">Back</Text>
       </TouchableOpacity>
     </View>
   );

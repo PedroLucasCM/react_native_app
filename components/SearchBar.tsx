@@ -1,14 +1,17 @@
 import { Image, TextInput, TextInputProps, View } from "react-native";
 
 import React from "react";
+import { colors } from "@/constants/colors";
 import { icons } from "@/constants/icons";
 
 interface Props {
   placeholder: string;
-  onPress?: () => void;
+  onPress?: TextInputProps["onPressIn"];
   value?: string;
   onChangeText?: (text: string) => void;
   onSubmitEditing?: TextInputProps["onSubmitEditing"];
+  inputRef?: React.RefObject<TextInput | null>;
+  autoFocus?: boolean;
 }
 
 function SearchBar({
@@ -17,6 +20,8 @@ function SearchBar({
   value,
   onChangeText,
   onSubmitEditing,
+  inputRef,
+  autoFocus = false,
 }: Props) {
   return (
     <View className="flex-row items-center bg-dark-200 rounded-full px-5 py-4">
@@ -24,17 +29,19 @@ function SearchBar({
         source={icons.search}
         className="size-5"
         resizeMode="contain"
-        tintColor="#ab8bff"
+        tintColor={colors.light[200]}
       />
       <TextInput
-        onPress={onPress}
+        ref={inputRef}
+        autoFocus={autoFocus}
+        onPressIn={onPress}
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
         onSubmitEditing={onSubmitEditing}
         returnKeyType="search"
-        placeholderTextColor="#a8b5db"
-        className="flex-1 ml-2 text-white"
+        placeholderTextColor={colors.light[100]}
+        className="flex-1 ml-2 text-light-100"
       />
     </View>
   );
