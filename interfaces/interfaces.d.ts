@@ -75,3 +75,14 @@ interface TrendingCardProps {
   movie: TrendingMovie;
   index: number;
 }
+
+interface FavoriteMovie {
+  userId?: string;
+  movieId: number;
+  favoriteDate?: string;
+  comments?: string;
+  rating: number;
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
+}

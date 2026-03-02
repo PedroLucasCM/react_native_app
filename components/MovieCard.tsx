@@ -1,8 +1,8 @@
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
-import { colors } from "@/constants/colors";
 import { Link } from "expo-router";
 import React from "react";
+import { colors } from "@/constants/colors";
 import { icons } from "@/constants/icons";
 
 const MovieCard = ({ item }: { item: Movie }) => {
@@ -18,7 +18,10 @@ const MovieCard = ({ item }: { item: Movie }) => {
           className="w-full h-56 rounded-lg"
           resizeMode="cover"
         />
-        <Text className="text-sm text-light-100 font-bold mt-2" numberOfLines={1}>
+        <Text
+          className="text-sm text-light-100 font-bold mt-2"
+          numberOfLines={1}
+        >
           {item.title}
         </Text>
 

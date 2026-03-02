@@ -10,8 +10,8 @@ import {
 import React, { useEffect, useState } from "react";
 import { getCurrentUser, logoutCurrentUser } from "@/services/appwrite";
 
-import { colors } from "@/constants/colors";
 import { Models } from "react-native-appwrite";
+import { colors } from "@/constants/colors";
 import { images } from "@/constants/images";
 import { useRouter } from "expo-router";
 
@@ -160,7 +160,9 @@ const Profile = () => {
                 onPress={() => router.push("/(account)/login")}
                 className="bg-accent px-4 py-3 rounded-xl mt-4"
               >
-                <Text className="text-light-100 font-semibold">Fazer Login</Text>
+                <Text className="text-light-100 font-semibold">
+                  Fazer Login
+                </Text>
               </Pressable>
             </View>
           )}

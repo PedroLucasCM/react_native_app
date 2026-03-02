@@ -17,6 +17,8 @@ const FAVORITES_COLLECTION_ID =
 const APPWRITE_ENDPOINT = process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!;
 const USERS_COLLECTION_ID =
   process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID_USERS!;
+const FAVORITE_COLLECTION_ID =
+  process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID_FAVORITES!;
 
 const client = new Client()
   .setEndpoint(APPWRITE_ENDPOINT)
@@ -214,6 +216,40 @@ export const createUserAccount = async ({
     return user;
   } catch (error) {
     console.log("Error creating Appwrite user:", error);
+    throw error;
+  }
+};
+
+export const addMovieToFavorites = async (favorite: FavoriteMovie) => {
+  if (!FAVORITE_COLLECTION_ID) {
+    console.log("Favorites collection ID is not defined.");
+    return;
+  }
+
+  try {
+    const user = await account.get();
+    const createdAt = favorite.createdAt || new Date().toISOString();
+    const updatedAt = favorite.updatedAt || createdAt;
+    const permissions = [
+      ...(favorite.isPublic ? [Permission.read(Role.any())] : []),
+    ];
+
+    await database.createDocument(
+      DATABASE_ID,
+      FAVORITE_COLLECTION_ID,
+      ID.unique(),
+      {
+        userId: user.$id,
+        movieId: favorite.movieId,
+        comments: favorite.comments,
+        favoriteDate: favorite.favoriteDate,
+        rating: favorite.rating,
+        isPublic: favorite.isPublic,
+      },
+      permissions,
+    );
+  } catch (error) {
+    console.log("Error adding movie to favorites:", error);
     throw error;
   }
 };

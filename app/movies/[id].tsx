@@ -1,8 +1,19 @@
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import * as secureStore from "expo-secure-store";
 
+import {
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+
+import FavoriteModal from "@/components/FavoriteModal";
 import { colors } from "@/constants/colors";
-import React from "react";
 import { fetchMovieDetails } from "@/services/api";
 import { icons } from "@/constants/icons";
 import useFetch from "@/services/useFetch";
@@ -22,8 +33,19 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => (
 );
 
 const MovieDetails = () => {
+  const router = useRouter();
+
   const { id } = useLocalSearchParams();
   const { data: movie } = useFetch(() => fetchMovieDetails(id as string));
+  const [isFavorite, setIsFavorite] = React.useState(false);
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const isFavoriteByUser = isFavorite ? colors.accent : colors.light[100];
+
+  const save = async (key: string, value: string) => {
+    await secureStore.setItemAsync(key, value);
+  };
   return (
     <View className="flex-1 bg-primary">
       <ScrollView
@@ -39,9 +61,31 @@ const MovieDetails = () => {
             resizeMode="stretch"
           />
         </View>
-        <View className="flex-col items-start justify-center mt-5 ">
-          <Text className="text-light-100 text-xl font-bold">{movie?.title}</Text>
+        <View className="flex-row items-center justify-between mt-5 w-full">
+          <Text className="text-light-100 text-xl font-bold flex-1 pr-3">
+            {movie?.title}
+          </Text>
+          <Pressable className="ml-2" onPress={() => setModalVisible(true)}>
+            <Image
+              source={icons.save}
+              className="size-5"
+              style={{
+                opacity: isFavorite ? 1 : 0.85,
+                tintColor: isFavoriteByUser,
+              }}
+            />
+          </Pressable>
         </View>
+        {modalVisible && movie && (
+          <FavoriteModal
+            movieId={movie.id}
+            onClose={() => {
+              setModalVisible(false);
+              Alert.alert("Favoritado!");
+            }}
+            onFavorite={(favorite: boolean) => setIsFavorite(favorite)}
+          />
+        )}
         <View className="flex-row items-center mt-2 gap-x-1">
           <Image source={icons.star} className="size-2" />
           <Text className="text-light-200 text-sm mt-2 font-bold">
