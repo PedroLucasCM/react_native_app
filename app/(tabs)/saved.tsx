@@ -1,29 +1,40 @@
-import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  RefreshControl,
+  Text,
+  View,
+} from "react-native";
+import React, { useCallback } from "react";
 
 import MovieCard from "@/components/MovieCard";
 import { colors } from "@/constants/colors";
-import React from "react";
+import { getFavoriteMovies } from "@/services/appwrite";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
-import { getFavoriteMovies } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Saved = () => {
   const {
     data: favoriteMoviesData,
     loading: favoritesLoading,
     error: favoritesError,
-  } = useFetch(getFavoriteMovies);
+    refetch,
+  } = useFetch(getFavoriteMovies, false);
   const favoriteMovies = favoriteMoviesData ?? [];
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
 
   return (
     <View className="flex-1 bg-primary">
-      <Image
-        source={images.bg}
-        className="absolute w-full h-full z-0"
-        resizeMode="cover"
-      />
-
+      <Image source={images.bg} className="absolute w-full h-full z-0" />
+      <Image source={icons.logo} className="w-12 h-10 mt-20 mb-5 mx-auto" />
       <FlatList<Movie>
         data={favoriteMovies}
         renderItem={({ item }) => (
@@ -31,19 +42,17 @@ const Saved = () => {
             <MovieCard item={item} />
           </View>
         )}
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={refetch} />
+        }
         keyExtractor={(item, index) => `${item.id.toString()}-${index}`}
         numColumns={2}
         className="px-5"
         columnWrapperStyle={{
-          justifyContent: "center",
-          gap: 16,
-          marginVertical: 16,
+          justifyContent: "space-between",
+          gap: 12,
         }}
-        contentContainerStyle={{
-          paddingTop: 84,
-          paddingBottom: 110,
-          flexGrow: favoriteMovies.length === 0 ? 1 : 0,
-        }}
+        scrollEnabled={false}
         ListHeaderComponent={
           <>
             <Text className="text-light-100 text-2xl font-bold text-center mb-3">

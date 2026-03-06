@@ -30,10 +30,12 @@ const FavoriteModal = ({
   const [comment, setComment] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const toggleSwitch = () => setIsPublic((previousState) => !previousState);
+
   const handleFavorite = async () => {
     const user = await getCurrentUser();
     if (!user) {
       Alert.alert("Voce precisar estar logado para favoritar");
+      return;
     }
 
     if (movieId) {
@@ -125,13 +127,17 @@ const FavoriteModal = ({
               value={isPublic}
             />
           </View>
+          <View>
+            <TouchableOpacity
+              className="absolute bottom-5 left-0 right-0 mx-5 bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center z-50"
+              onPress={handleFavorite}
+            >
+              <Text className="text-light-100 text-base font-semibold">
+                Post
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <TouchableOpacity
-          className="absolute bottom-5 left-0 right-0 mx-5 bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center z-50"
-          onPress={handleFavorite}
-        >
-          <Text className="text-light-100 text-base font-semibold">Post</Text>
-        </TouchableOpacity>
       </View>
     </Modal>
   );

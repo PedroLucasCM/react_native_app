@@ -54,7 +54,9 @@ export default function Index() {
         ) : (
           <View className="flex-1 mt-5">
             <SearchBar
-              onPress={() => router.push({ pathname: "/search", params: { focus: "1" } })}
+              onPress={() =>
+                router.push({ pathname: "/search", params: { focus: "1" } })
+              }
               placeholder="Search for a movie or show"
             />
             {trendingMovies && trendingMovies.length > 0 && (

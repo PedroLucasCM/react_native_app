@@ -1,6 +1,13 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
-import { ActivityIndicator, FlatList, Image, Text, TextInput, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { useEffect, useRef, useState } from "react";
 
 import MovieCard from "@/components/MovieCard";
@@ -90,9 +97,9 @@ const search = () => {
         ListHeaderComponent={
           <>
             <View className="w-full flex-row justify-center mt-20">
-              <Image source={icons.logo} className="w-12 h-10" />
+              <Image source={icons.logo} className="w-12 h-10 mb-5 mx-auto" />
             </View>
-            <View className="my-5">
+            <View className="my-5 flex-1">
               <SearchBar
                 placeholder="Search for movies..."
                 value={searchQuery}

@@ -9,11 +9,12 @@ import {
   Role,
 } from "react-native-appwrite";
 
+import { fetchMovieDetails } from "./api";
+
 // trach the searches made by the user and store them in appwrite database
 const DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
 const COLLECTION_ID = process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!;
-const FAVORITES_COLLECTION_ID =
-  process.env.EXPO_PUBLIC_APPWRITE_FAVORITES_COLLECTION_ID;
+
 const APPWRITE_ENDPOINT = process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!;
 const USERS_COLLECTION_ID =
   process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID_USERS!;
@@ -34,13 +35,19 @@ type CreateAccountParams = {
   birthDate: string;
 };
 
-const normalizePosterPath = (value: unknown): string => {
-  if (typeof value !== "string" || !value) return "";
-  if (!value.startsWith("http")) return value;
-
-  const match = value.match(/\/w\d+(\/.+)$/);
-  return match?.[1] ?? value;
+type UserFavoriteMovies = {
+  $id: string;
+  userId: string;
+  movieId: number;
+  favoriteDate: Date;
+  rating: number;
+  comments: string;
+  isPublic: boolean;
+  $createdAt: Date;
+  $updateAt: Date;
 };
+
+type FavoriteDocument = Models.Document & UserFavoriteMovies;
 
 export const updateSearchCount = async (searchTerm: string, movie: Movie) => {
   try {
@@ -107,52 +114,6 @@ export const getTrendingMovies = async (): Promise<
   } catch (error) {
     console.log("Error fetching trending movies from Appwrite:", error);
     return undefined;
-  }
-};
-
-export const getFavoriteMovies = async (): Promise<Movie[]> => {
-  if (!FAVORITES_COLLECTION_ID) return [];
-
-  try {
-    const user = await account.get();
-    const result = await database.listDocuments(
-      DATABASE_ID,
-      FAVORITES_COLLECTION_ID,
-      [
-        Query.equal("user_id", user.$id),
-        Query.orderDesc("$createdAt"),
-        Query.limit(100),
-      ],
-    );
-
-    return result.documents
-      .map((doc): Movie => {
-        const title = String(doc.title ?? "");
-        const movieId = Number(doc.movie_id ?? doc.id ?? 0);
-
-        return {
-          id: movieId,
-          title,
-          adult: Boolean(doc.adult ?? false),
-          backdrop_path: String(doc.backdrop_path ?? ""),
-          genre_ids: Array.isArray(doc.genre_ids)
-            ? doc.genre_ids.map((id: unknown) => Number(id))
-            : [],
-          original_language: String(doc.original_language ?? "en"),
-          original_title: String(doc.original_title ?? title),
-          overview: String(doc.overview ?? ""),
-          popularity: Number(doc.popularity ?? 0),
-          poster_path: normalizePosterPath(doc.poster_path ?? doc.poster_url),
-          release_date: String(doc.release_date ?? ""),
-          video: Boolean(doc.video ?? false),
-          vote_average: Number(doc.vote_average ?? 0),
-          vote_count: Number(doc.vote_count ?? 0),
-        };
-      })
-      .filter((movie) => movie.id > 0 && movie.title.length > 0);
-  } catch (error) {
-    console.log("Error fetching favorite movies from Appwrite:", error);
-    return [];
   }
 };
 
@@ -245,11 +206,93 @@ export const addMovieToFavorites = async (favorite: FavoriteMovie) => {
         favoriteDate: favorite.favoriteDate,
         rating: favorite.rating,
         isPublic: favorite.isPublic,
+        $createdAt: createdAt,
+        $updatedAt: updatedAt,
       },
       permissions,
     );
   } catch (error) {
     console.log("Error adding movie to favorites:", error);
+    throw error;
+  }
+};
+export const getFavoriteMovies = async (): Promise<Movie[]> => {
+  if (!FAVORITE_COLLECTION_ID) return [];
+  try {
+    const user = await account.get();
+    const result = await database.listDocuments(
+      DATABASE_ID,
+      FAVORITE_COLLECTION_ID,
+      [
+        Query.equal("userId", user.$id),
+        Query.orderDesc("$createdAt"),
+        Query.limit(100),
+      ],
+    );
+
+    const favorites = await Promise.all(
+      result.documents.map(async (doc) => {
+        const movieId = Number(doc.movieId);
+        if (!Number.isFinite(movieId)) return null;
+
+        try {
+          const movieDetails = await fetchMovieDetails(movieId.toString());
+          return movieDetails as unknown as Movie;
+        } catch (error) {
+          console.log(`Error fetching movie ${movieId} from TMDB:`, error);
+          return null;
+        }
+      }),
+    );
+
+    return favorites.filter((movie): movie is Movie => movie !== null);
+  } catch (error) {
+    console.log("Error fetching favorite movies from Appwrite:", error);
+    return [];
+  }
+};
+
+export const getFavoriteMovie = async (
+  movieId: number | string,
+): Promise<FavoriteDocument | null> => {
+  if (!FAVORITE_COLLECTION_ID) return null;
+  try {
+    const user = await account.get();
+    const parsedMovieId = Number(movieId);
+    if (!Number.isFinite(parsedMovieId)) return null;
+
+    const result = await database.listDocuments(
+      DATABASE_ID,
+      FAVORITE_COLLECTION_ID,
+      [
+        Query.equal("userId", user.$id),
+        Query.equal("movieId", parsedMovieId),
+        Query.limit(1),
+      ],
+    );
+
+    if (!result.documents.length) return null;
+
+    return result.documents[0] as unknown as FavoriteDocument;
+  } catch (error) {
+    console.log("Error fetching favorite movie from Appwrite:", error);
+    return null;
+  }
+};
+
+export const removeMovieFromFavorites = async (movieId: number | string) => {
+  if (!FAVORITE_COLLECTION_ID) return;
+  try {
+    const favoriteDocument = await getFavoriteMovie(movieId);
+    if (!favoriteDocument) return;
+
+    await database.deleteDocument(
+      DATABASE_ID,
+      FAVORITE_COLLECTION_ID,
+      favoriteDocument.$id,
+    );
+  } catch (error) {
+    console.log("Error removing movie from favorites:", error);
     throw error;
   }
 };
